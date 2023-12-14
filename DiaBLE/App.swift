@@ -87,11 +87,11 @@ enum TrendArrow: Int, CustomStringConvertible, CaseIterable, Codable {
     var description: String {
         switch self {
         case .notDetermined:  "NOT_DETERMINED"
-        case .fallingQuickly: "FALLING_QUICKLY"
-        case .falling:        "FALLING"
-        case .stable:         "STABLE"
-        case .rising:         "RISING"
-        case .risingQuickly:  "RISING_QUICKLY"
+        case .fallingQuickly: "↓"
+        case .falling:        "↘︎"
+        case .stable:         "→"
+        case .rising:         "↗︎"
+        case .risingQuickly:  "↑"
         default:              ""
         }
     }

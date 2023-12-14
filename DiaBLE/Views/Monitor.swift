@@ -17,6 +17,14 @@ struct Monitor: View {
 
     @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    @State var currentTime = Date()
+       
+        // Creating a date formatter to format the time as HH:mm
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm"
+            return formatter
+        }()
 
     var body: some View {
         NavigationView {
@@ -48,11 +56,12 @@ struct Monitor: View {
                             }
 
                             Text(app.currentGlucose > 0 ? "\(app.currentGlucose.units) " : "--- ")
-                                .font(.system(size: 42, weight: .black)).monospacedDigit()
-                                .foregroundColor(.black)
+                                .font(.system(size: 58, weight: .black))
+                                //.monospacedDigit()
+                                .foregroundColor(Color(UIColor.label))
                                 .padding(5)
-                                .background(app.currentGlucose > 0 && (app.currentGlucose > Int(settings.alarmHigh) || app.currentGlucose < Int(settings.alarmLow)) ?
-                                            Color.red : Color.blue)
+                                .background(app.currentGlucose > 0 && (app.currentGlucose > Int(settings.alarmHigh) || app.currentGlucose < Int(settings.alarmLow)) ?Color.red : Color(UIColor.systemBackground))
+                            
                                 .cornerRadius(8)
 
                             // TODO: display both delta and trend arrow
@@ -63,8 +72,10 @@ struct Monitor: View {
                                             .fontWeight(.black)
                                         Text("\(app.trendDeltaMinutes) min").font(.footnote)
                                     }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 12)
+                                        
                                 } else {
                                     Text(app.trendArrow.symbol).font(.largeTitle).bold()
+                                        
                                         .frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 12)
                                 }
                             }.foregroundColor(app.currentGlucose > 0 && ((app.currentGlucose > Int(settings.alarmHigh) && (app.trendDelta > 0 || app.trendArrow == .rising || app.trendArrow == .risingQuickly)) || (app.currentGlucose < Int(settings.alarmLow) && (app.trendDelta < 0 || app.trendArrow == .falling || app.trendArrow == .fallingQuickly))) ?
@@ -72,14 +83,10 @@ struct Monitor: View {
 
                         }
 
-//                        app.glycemicAlarm.description   String
-//                        app.trendArrow.description    String
-//                        arrow Color   String
-                        
                         Text("\(app.glycemicAlarm.description.replacingOccurrences(of: "_", with: " "))\(app.glycemicAlarm.description != "" ? " - " : "")\(app.trendArrow.description.replacingOccurrences(of: "_", with: " "))")
                             .foregroundColor(app.currentGlucose > 0 && ((app.currentGlucose > Int(settings.alarmHigh) && (app.trendDelta > 0 || app.trendArrow == .rising || app.trendArrow == .risingQuickly)) || (app.currentGlucose < Int(settings.alarmLow) && (app.trendDelta < 0 || app.trendArrow == .falling || app.trendArrow == .fallingQuickly))) ?
-                                .red : .blue)
-
+                                .red : .blue).font(.system(size: 55))
+//
                         HStack {
                             Text(app.deviceState)
                                 .foregroundColor(app.deviceState == "Connected" ? .green : .red)
@@ -146,6 +153,32 @@ struct Monitor: View {
                             Text("Details").font(.footnote).bold().fixedSize()
                                 .padding(.horizontal, 4).padding(2).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.accentColor, lineWidth: 2))
                         }
+                        
+                        
+                        //
+                         //
+                         ZStack {
+                             // Creating a text view that displays the current time
+                             Text(formatter.string(from: currentTime))
+                             // Setting the font size and weight
+                               
+                                 .font(.system(size: 65, weight: .black))
+                             // Setting the foreground color based on the system color
+                                 .foregroundColor(Color(UIColor.label))
+                             // Setting the background color based on the system color
+                                 .background(Color(UIColor.systemBackground))
+                             // Setting the frame size and alignment
+                                 .frame(width: 300, height: 100, alignment: .center)
+                             // Setting the corner radius and shadow
+                              //   .cornerRadius(20)
+                             // Subscribing to the timer publisher and updating the current time
+                                 .onReceive(timer) { time in
+                                     self.currentTime = time
+                                 }
+                         }
+                
+             //
+                        
                     }
 
                     Spacer()
@@ -175,7 +208,7 @@ struct Monitor: View {
                 }
                 .multilineTextAlignment(.center)
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle("DiaBLE  \(Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String)  -  Monitor")
+                .navigationTitle("Monitor")
                 .onAppear {
                     timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
                     minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
@@ -194,6 +227,15 @@ struct Monitor: View {
                             withAnimation(.easeOut(duration: 0.15)) { showingHamburgerMenu.toggle() }
                         } label: {
                             Image(systemName: "line.horizontal.3")
+                        }
+                    }
+
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            settings.caffeinated.toggle()
+                            UIApplication.shared.isIdleTimerDisabled = settings.caffeinated
+                        } label: {
+                            Image(systemName: settings.caffeinated ? "cup.and.saucer.fill" : "cup.and.saucer" )
                         }
                     }
 

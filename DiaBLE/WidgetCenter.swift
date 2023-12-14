@@ -9,15 +9,24 @@ import ActivityKit
 import Foundation
 import SwiftUI
 
+
 class WidgetCenter: ObservableObject{
+    
+    
+    
     
     static var shared = WidgetCenter()
     
     private init(){
-        
+       
     }
     
     var activity: Activity<DiaBLE_LiveActivitiesAttributes>? = nil
+    
+    var isActivityRunning = false
+
+    
+
 
     func startLiveActivity(lastReadingDate: String? = nil,  minuteSinceLastReading: String? = nil, currentGlucose: String, alarmHigh: Int, alarmLow: Int, color: String, appState: String, sensorStateDescription: String, sensorStateColor: String, glycemicAlarmDescription: String, trendArrowDescription: String, arrowColor: String){
         
@@ -27,7 +36,10 @@ class WidgetCenter: ObservableObject{
         }
         
         print("starting live activity.")
-        
+     
+        //  start Location Manager
+        BackgroundManager.shared.enabled = true
+    
         let attributes = DiaBLE_LiveActivitiesAttributes(name: "live activity")
         
         let state = ActivityContent(state: DiaBLE_LiveActivitiesAttributes.ContentState(lastReadingDate: lastReadingDate, minuteSinceLastReading: minuteSinceLastReading, currentGlucose: currentGlucose, alarmHigh: alarmHigh, alarmLow: alarmLow, color: color, appState: appState, sensorStateDescription: sensorStateDescription, sensorStateColor: sensorStateColor, glycemicAlarmDescription: glycemicAlarmDescription, trendArrowDescription: trendArrowDescription, arrowColor: arrowColor), staleDate: nil)
@@ -35,6 +47,7 @@ class WidgetCenter: ObservableObject{
         activity = try?Activity.request(attributes: attributes, content: state)
         
     }
+ 
     
     //    var glycemicAlarmDescription: String
     //    var trendArrowDescription: String
@@ -49,6 +62,7 @@ class WidgetCenter: ObservableObject{
          let state = ActivityContent(state: DiaBLE_LiveActivitiesAttributes.ContentState(lastReadingDate: lastReadingDate, minuteSinceLastReading: minuteSinceLastReading, currentGlucose: currentGlucose, alarmHigh: alarmHigh, alarmLow: alarmLow, color: color, appState: appState, sensorStateDescription: sensorStateDescription, sensorStateColor: sensorStateColor, glycemicAlarmDescription: glycemicAlarmDescription, trendArrowDescription: trendArrowDescription, arrowColor: arrowColor), staleDate: nil)
         
         Task{
+            
             await activity?.update(state)
         }
     }

@@ -58,9 +58,14 @@ class EventKit: Logging {
                 }
             }
 
+            
             let currentGlucose = self.main.app.currentGlucose
             var title = currentGlucose > 0 ? "\(currentGlucose.units)" : "---"
-
+            let trendArrow = self.main.app.trendArrow
+            if trendArrow != .unknown {
+                title += "  \(trendArrow.symbol)"
+            }
+            
             if currentGlucose != 0 {
                 title += "  \(self.settings.displayingMillimoles ? GlucoseUnit.mmoll : GlucoseUnit.mgdl)"
 
@@ -75,13 +80,15 @@ class EventKit: Logging {
                         title += "  LOW"
                     }
                 }
+                
+                if self.main.app.trendDeltaMinutes > 0 {
+                                   title += "\n"
+                                   title += "\(self.main.app.trendDelta > 0 ? "+" : self.main.app.trendDelta < 0 ? "-" : "")\(self.main.app.trendDelta == 0 ? "→" : abs(self.main.app.trendDelta).units)" + " over " + "\(self.main.app.trendDeltaMinutes)" + " min"
+                               }
+                               else {
+                                   title += "\n Computing trend"
+                               }
 
-                let trendArrow = self.main.app.trendArrow
-                if trendArrow != .unknown {
-                    title += "  \(trendArrow.symbol)"
-                }
-
-                // TODO: delta
 
                 let snoozed = self.settings.lastAlarmDate.timeIntervalSinceNow >= -Double(self.settings.alarmSnoozeInterval * 60) && self.settings.disabledNotifications
 

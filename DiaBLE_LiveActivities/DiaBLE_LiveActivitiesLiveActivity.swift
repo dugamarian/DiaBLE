@@ -18,42 +18,53 @@ struct DiaBLE_LiveActivitiesLiveActivity: Widget {
             HStack(spacing: 10){
                 VStack {
                     if let lastReadingDate = context.state.lastReadingDate, let minuteSinceLastReading = context.state.minuteSinceLastReading{
-                        Text(lastReadingDate).monospacedDigit()
-                        Text(minuteSinceLastReading).font(.footnote).monospacedDigit()
+                        Text(lastReadingDate).monospacedDigit().foregroundColor(.white)
+                        Text(minuteSinceLastReading).font(.footnote).monospacedDigit().foregroundColor(.white)
+                    
                     }else{
                         Text("___")
                     }
                     
     //                Text("Hello \(context.state.emoji)")
                 }
+               
                 
                 HStack{
                     Text(context.state.currentGlucose)
                         .font(.system(size: 32, weight: .black))
                         .foregroundStyle(.black)
                         .padding(5)
-                        .background(context.state.color == "red" ? Color.red : Color.blue)
+                        .background(context.state.color == "red" ? Color.red : Color.white)
                         .cornerRadius(8)
                     
-                    Text("\(context.state.glycemicAlarmDescription.replacingOccurrences(of: "_", with: " "))\(context.state.glycemicAlarmDescription != "" ? " - " : "")\(context.state.trendArrowDescription.replacingOccurrences(of: "_", with: " "))")
+                    Text("\(context.state.glycemicAlarmDescription.replacingOccurrences(of: "_", with: " "))\(context.state.glycemicAlarmDescription != "" ? " - " : "")\(context.state.trendArrowDescription.replacingOccurrences(of: "_", with: " "))").font(.system(size: 34))
                         .foregroundStyle(context.state.arrowColor == "red" ? .red : .white)
+                        
+                    
+                    
                 }
                 
                 
                 VStack{
                     Text(context.state.appState)
+                        .foregroundStyle(context.state.sensorStateColor == "green" ? .yellow : .red)
                         .font(.footnote)
                         .padding(.horizontal, 5)
                     Text(context.state.sensorStateDescription)
-                        .foregroundStyle(context.state.sensorStateColor == "green" ? .green : .red)
+                        .foregroundStyle(context.state.sensorStateColor == "yellow" ? .yellow : .green)
                 }
                 
             }
-            
-            .activityBackgroundTint(Color.cyan)
-            .activitySystemActionForegroundColor(Color.black)
+           
 
-        } 
+
+            
+           // .activityBackgroundTint(Color(UIColor.systemBackground))
+          //  .activityBackgroundTint(Color(UIColor.label))
+            .activityBackgroundTint(Color.black.opacity(0.5))
+            .activitySystemActionForegroundColor(Color.black)
+            
+        }
     dynamicIsland: { context in
             DynamicIsland {
                 // Expanded UI goes here.  Compose the expanded UI through
@@ -167,7 +178,7 @@ extension DiaBLE_LiveActivitiesAttributes {
 //    fileprivate static var smiley: DiaBLE_LiveActivitiesAttributes.ContentState {
 //        DiaBLE_LiveActivitiesAttributes.ContentState(emoji: "😀")
 //     }
-//     
+//
 //     fileprivate static var starEyes: DiaBLE_LiveActivitiesAttributes.ContentState {
 //         DiaBLE_LiveActivitiesAttributes.ContentState()
 //     }
