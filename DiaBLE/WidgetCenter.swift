@@ -8,6 +8,8 @@
 import ActivityKit
 import Foundation
 import SwiftUI
+import WidgetKit
+import Combine
 
 
 class WidgetCenter: ObservableObject{
@@ -39,12 +41,24 @@ class WidgetCenter: ObservableObject{
      
         //  start Location Manager
         BackgroundManager.shared.enabled = true
-    
-        let attributes = DiaBLE_LiveActivitiesAttributes(name: "live activity")
         
-        let state = ActivityContent(state: DiaBLE_LiveActivitiesAttributes.ContentState(lastReadingDate: lastReadingDate, minuteSinceLastReading: minuteSinceLastReading, currentGlucose: currentGlucose, alarmHigh: alarmHigh, alarmLow: alarmLow, color: color, appState: appState, sensorStateDescription: sensorStateDescription, sensorStateColor: sensorStateColor, glycemicAlarmDescription: glycemicAlarmDescription, trendArrowDescription: trendArrowDescription, arrowColor: arrowColor), staleDate: nil)
+        do {
+            activityStart = Date()
+            activityRestart = Date() + 5 * 60
+            activityStop = Date() + 8 * 60 * 60
+            
+            let attributes = DiaBLE_LiveActivitiesAttributes(name: "live activity")
+            
+            let state = ActivityContent(state: DiaBLE_LiveActivitiesAttributes.ContentState(lastReadingDate: lastReadingDate, minuteSinceLastReading: minuteSinceLastReading, currentGlucose: currentGlucose, alarmHigh: alarmHigh, alarmLow: alarmLow, color: color, appState: appState, sensorStateDescription: sensorStateDescription, sensorStateColor: sensorStateColor, glycemicAlarmDescription: glycemicAlarmDescription, trendArrowDescription: trendArrowDescription, arrowColor: arrowColor), staleDate: nil)
+            
+            activity = try?Activity.request(attributes: attributes, content: state)
+            
+        }
+        activityStart = nil
+        activityRestart = nil
+        activityStop = nil
+        activity = nil
         
-        activity = try?Activity.request(attributes: attributes, content: state)
         
     }
  
@@ -86,3 +100,7 @@ class WidgetCenter: ObservableObject{
     }
     
 }
+
+private var activityStart: Date?
+private var activityRestart: Date?
+private var activityStop: Date?
