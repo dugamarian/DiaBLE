@@ -30,11 +30,12 @@ struct DiaBLE_LiveActivitiesLiveActivity: Widget {
                
                 
                 HStack{
-                    Text(context.state.currentGlucose)
-                        .font(.system(size: 32, weight: .black))
+                    Text("\(context.state.currentGlucose)")\(context.state.trendArrowDescription.replacingOccurrences(of: "_", with: " "))")".font(.system(size: 34)))
+                        .foregroundStyle(context.state.arrowColor == "red" ? .red : .white)
+                        .font(.system(size: 40, weight: .black))
                         .foregroundStyle(.black)
                         .padding(5)
-                        .background(context.state.color == "red" ? Color.red : Color.white)
+                        .background(context.state.color == "red" ? Color.red : Color.white.opacity(0.4))
                         .cornerRadius(8)
                     
                     Text("\(context.state.glycemicAlarmDescription.replacingOccurrences(of: "_", with: " "))\(context.state.glycemicAlarmDescription != "" ? " - " : "")\(context.state.trendArrowDescription.replacingOccurrences(of: "_", with: " "))").font(.system(size: 34))
